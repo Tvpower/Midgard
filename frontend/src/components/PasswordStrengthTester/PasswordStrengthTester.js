@@ -95,7 +95,7 @@ const PasswordStrengthTester = () => {
             <h2>Password Strength Tester</h2>
             <input
                 type="password"
-                placeholder="Enter a password"
+                placeholder="Enter a password1"
                 value={password}
                 onChange={handlePasswordChange}
             />
