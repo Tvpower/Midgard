@@ -2,7 +2,6 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -10,15 +9,19 @@ const RegisterPage = () => {
     const [loginError, setLoginError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent page reload
+
         try {
             const response = await axios.post('http://localhost:3001/user/register', {
                 username,
                 email,
                 password,
             });
-            //navigate("/login", {replace: true})  //REGISTER DOESN'T LOG THE USER IN CAUSING REDUNDANCY
-    
+
+            if (response.status === 201) {
+                navigate("/login", { replace: true }); // Redirect to login page after successful registration
+            }
         } catch (error) {
             if (error.response) {
                 if (error.response.status === 401) {
@@ -32,7 +35,7 @@ const RegisterPage = () => {
                 setLoginError('An error occurred. Please try again later.');
             }
         }
-    }
+    };
 
     return (
         <div id="home" className="homeDiv">
@@ -72,7 +75,6 @@ const RegisterPage = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            
                             <button type="submit" className="register-button">Register</button>
                             {loginError && <p className="error">{loginError}</p>}
                             <div className="link-group">
@@ -88,6 +90,6 @@ const RegisterPage = () => {
             </div>
         </div>
     );
-}
+};
 
 export default RegisterPage;
