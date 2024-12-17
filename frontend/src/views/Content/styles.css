@@ -1,12 +1,10 @@
-/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Dark background and white text for contrast */
-    background-color: #000000; 
-    color: #fff;
+    background-color: #121212; /* Slightly lighter black for less harshness */
+    color: #f0f0f0; /* Softer white text */
 }
 
 .container {
@@ -18,12 +16,12 @@ body {
 
 /* Sidebar Styles */
 .sidebar {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.8) 50%);
+    background: linear-gradient(to bottom, #1a1a1a, #121212); /* Smoother gradient */
     padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #fff;
-    color: #fff;
-    box-shadow: none;
+    border-radius: 12px; /* Increased radius for softer corners */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Lighter, translucent borders */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); /* Softer shadows */
+    color: #e0e0e0; /* Softer text color */
 }
 
 .subscribe-box {
@@ -40,20 +38,32 @@ body {
     color: #fff;
 }
 
+
+.subscribe-box input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #fff;
+}
+
 .subscribe-box button {
     width: 100%;
     padding: 10px;
     background: transparent;
     color: #fff;
-    border: 1px solid #fff;
+    border: none;
     border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: ease-in-out 0.3s;
 }
-
 .subscribe-box button:hover {
     border-color: #0874dc;
     color: #0874dc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .progress {
@@ -61,9 +71,9 @@ body {
 }
 
 .progress-bar {
-    background-color: #444;
+    background-color: #333;
     height: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -85,20 +95,22 @@ body {
     padding: 5px 0;
 }
 
+
 .chapter-item a {
     text-decoration: none;
-    color: #fff;
+    color: #e0e0e0;
     cursor: pointer;
     display: block;
     padding: 5px;
     border-radius: 4px;
     transition: ease-in-out 0.3s;
     margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.05); /* Subtle background for hover effect */
 }
 
 .chapter-item a:hover {
     color: #0874dc;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Add the transition for the blind effect */
@@ -107,7 +119,16 @@ body {
     padding-left: 20px;
     max-height: 0; /* Collapsed by default */
     overflow: hidden; 
-    transition: max-height 0.3s ease, opacity 0.3s ease;}
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.subsection-list {
+    list-style-type: none;
+    padding-left: 20px;
+    max-height: 0; /* Collapsed by default */
+    overflow: hidden; 
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
 
 .subsection-list.expanded {
     max-height: 500px;
@@ -135,12 +156,34 @@ body {
 
 /* Main Content Styles */
 .main-content {
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.8) 50%);
+    background: linear-gradient(to top, rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0.9));
     padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #fff;
-    color: #fff;
-    box-shadow: none;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    color: #f0f0f0;
+    height: calc(100vh - 100px); /* Adjust height to viewport minus header/margins */
+    overflow-y: auto; /* Enable vertical scrolling */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent; /* For Firefox */
+}
+
+/* Custom scrollbar styling for WebKit browsers */
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .main-content h2 {
@@ -155,12 +198,14 @@ body {
 }
 
 .main-content p {
-    line-height: 1.6;
+    line-height: 1.8; /* Increased for readability */
+    color: #d0d0d0;
     margin-bottom: 15px;
 }
 
 .image-box {
     margin-top: 20px;
+    margin-bottom: 60px;
     text-align: center;
 }
 
@@ -172,12 +217,12 @@ body {
 
 /* Right Panel Styles */
 .right-panel {
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.8) 50%);
+    background: linear-gradient(to bottom, #1a1a1a, #121212);
     padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #fff;
-    color: #fff;
-    box-shadow: none;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    color: #e0e0e0;
 }
 
 .tools {
@@ -191,8 +236,9 @@ body {
     padding: 10px;
     background: transparent;
     color: #fff;
-    border: 1px solid #fff;
-    border-radius: 4px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: ease-in-out 0.3s;
 }
@@ -200,25 +246,29 @@ body {
 .tools button:hover {
     border-color: #0874dc;
     color: #0874dc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .chat-box {
-    border: 1px solid #fff;
-    border-radius: 4px;
-    padding: 10px;
-    background: transparent;
-    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Lighter border */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    border-radius: 9px;
+    background: #1a1a1a;
+    color: #e0e0e0;
 }
 
 .chat-message {
-    margin-bottom: 10px;
+    margin-top: 7px;
+    margin-left: 10px;
+    margin-bottom: 7px;
+    font-size: 0.85em;
 }
 
 .chat-box input {
     width: calc(100% - 20px);
     padding: 10px;
     background: transparent;
-    border: 1px solid #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     color: #fff;
 }
@@ -234,11 +284,16 @@ body {
     line-height: 1.6;
     color: #fff;
 }
+.chapter {
+    position: relative;
+    padding-bottom: 80px;
+}
+
 .next-page-button {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    padding: 12px;
+    padding: 12px 24px;
     background: transparent;
     color: #fff;
     border: 1px solid #fff;
@@ -446,45 +501,117 @@ body {
 }
 /* Exercise Page Styles */
 .exercise-page {
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;    /* Centers vertically */
-    height: 100vh;          /* Full viewport height */
-    width: 100vw;           /* Full viewport width */
+    grid-column: 2; /* Position in the middle column */
+    position: relative;
+    flex: 1;
     margin: 0;
-    padding: 0;
-    background-color: #000; /* Black background */
-    box-sizing: border-box;
-    overflow: hidden;       /* Prevent scrollbars if extra space exists */
+    overflow-y: auto;
 }
 
 .exercise-container {
+    margin: 20px auto;
+    background: #1e1e1e;
+    padding: 40px;
+    border-radius: 16px;
+    width: 80%;
+    max-width: 900px;
+}
+
+.card-container {
+    perspective: 1000px;
+    margin: 30px auto;
+    width: 100%;
+}
+
+.flashcard {
+    position: relative;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    width: 100%;
+    min-height: 300px;
+    cursor: pointer;
+}
+
+.flashcard.flipping {
+    animation: cardFlip 0.8s ease;
+}
+
+.card-content {
+    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backface-visibility: hidden;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers content inside the container */
-    align-items: center;     /* Aligns content in the center horizontally */
-    text-align: center;      /* Centers text inside the container */
-    max-width: 600px;        /* Restrict box width for content readability */
-    width: 90%;              /* Responsive width for smaller screens */
-    padding: 30px;           /* Adds spacing inside the container */
-    border-radius: 10px;     /* Rounded corners for aesthetics */
-    background: #1a1a1a;     /* Dark grey background */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8); /* Subtle shadow */
-    color: #fff;             /* White text for contrast */
+    justify-content: center;
 }
 
-
-  
-.exercise-container button {
-    padding: 10px 15px;
-    border-radius: 5px;
-    background-color: #0874dc;
-    color: #fff;
-    transition: background-color 0.3s ease;
+.question-side, .answer-side {
+    text-align: center;
 }
 
-.exercise-container button:hover {
-    background-color: #005bb5;
+.correct {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.incorrect {
+    color: #f44336;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+@keyframes cardFlip {
+    0% {
+        transform: rotateX(0);
+    }
+    50% {
+        transform: rotateX(90deg);
+        opacity: 0.1;
+    }
+    100% {
+        transform: rotateX(0);
+        opacity: 1;
+    }
+}
+
+/* Style for the input field */
+.card-content input[type="text"] {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    margin-top: 20px;
+}
+
+/* Hover effect for the flashcard */
+.flashcard:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Button styling */
+button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #0056b3;
 }
 
 /* Results Container */
@@ -492,15 +619,14 @@ body {
 /* Results Container */
 /* Results Container */
 .results-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center-align the title and grid horizontally */
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-    background-color: #000;
-    box-sizing: border-box;
+    grid-column: 1 / -1;  /* Span all columns */
+    width: 100vw;         /* Full viewport width */
+    max-width: none;
+    margin-left: calc(-50vw + 50%); /* Compensate for container padding */
+    margin-right: calc(-50vw + 50%);
+    padding: 40px;
+    background: #1e1e1e;
+    border-radius: 0;     /* Remove border radius for full-width look */
 }
 
 .results-container h3 {
@@ -508,25 +634,30 @@ body {
     text-align: center; /* Ensures the title is centered */
 }
 
+
+/* Results Grid */
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust columns dynamically */
-    gap: 20px; /* Space between grid items */
-    width: 100%; /* Occupies the container's width */
-    max-width: 1200px; /* Optional: restrict width for better aesthetics */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
     padding: 20px;
-    box-sizing: border-box;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .result-item {
-    background: #1a1a1a;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-    color: #fff;
-    text-align: left;
-    box-sizing: border-box;
-    min-width: 250px; /* Prevents collapsing */
+    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.result-item p {
+    margin: 5px 0;
+}
+
+.result-item span {
+    font-weight: bold;
 }
 
 button {
@@ -558,4 +689,33 @@ button[onClick="onBack"] {
 .result-item span {
     font-weight: bold;
 }
+
+
+.tool-item {
+    margin: 40px;
+}
+
+.terminal-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.terminal-container h3 {
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+/* Ensure the terminal fits properly */
+.terminal-container .xterm {
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #1a1a1a;
+}
+
+
+
 

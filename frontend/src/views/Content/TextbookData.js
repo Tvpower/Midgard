@@ -278,8 +278,224 @@ const textbookData = {
           ]
         }
       ]
+    },
+    {
+      title: "Chapter 5: Moving and Manipulating Files",
+      summary: "This chapter focuses on file management in Linux, covering essential commands for navigating directories, copying and moving files, creating and removing directories, and viewing or editing file content.",
+      content: "Linux provides powerful command-line tools for file management. In this chapter, readers will learn how to efficiently navigate and organize their files and directories, ensuring seamless workflow and data handling.",
+      image: "https://ubuntucommunity.s3.us-east-2.amazonaws.com/original/2X/7/78c42837d43e6483cfff3c1b20d6d27ae89e198d.png",
+      subsections: [
+        {
+          title: "5.1 Navigating Directories",
+          content: "Understanding the Linux directory structure and essential commands like 'cd', 'pwd', and 'ls' for efficient navigation.",
+          bulletPoints: [
+            "Understanding the directory structure",
+            "Using 'cd' to change directories",
+            "Viewing the current directory with 'pwd'",
+            "Listing directory contents with 'ls'"
+          ],
+          extraContent: [
+            "Understanding the directory structure: <br />Linux directories are organized hierarchically, starting from the root '/'. Key directories include '/home' for user data and '/etc' for system configuration files. Understanding this structure is crucial for efficient navigation.",
+            "Using 'cd' to change directories: <br />The 'cd' command helps navigate between directories. For example, 'cd /home/user' moves to the user's directory. Relative paths like 'cd ..' go up one level in the hierarchy.",
+            "Viewing the current directory with 'pwd': <br />The 'pwd' command displays the full path of the current working directory. This is particularly useful when working deep in nested directories to avoid confusion.",
+            "Listing directory contents with 'ls': <br />Use 'ls' to list files in a directory. Adding options like '-l' shows detailed information, and '-a' includes hidden files starting with '.' for comprehensive views."
+          ]
+        },
+        {
+          title: "5.2 Creating and Removing Directories",
+          content: "How to manage directories effectively using commands like 'mkdir' and 'rmdir', and understanding directory permissions.",
+          bulletPoints: [
+            "Creating directories with 'mkdir'",
+            "Removing directories with 'rmdir'",
+            "Understanding directory permissions",
+            "Using 'rm' to remove files and directories"
+          ],
+          extraContent: [
+            "Creating directories with 'mkdir': <br />The 'mkdir' command creates directories. Use 'mkdir -p' for nested directories, e.g., 'mkdir -p dir1/dir2' creates both directories at once.",
+            "Removing directories with 'rmdir': <br />'rmdir' removes empty directories. If a directory contains files, use 'rm -r' to recursively delete its contents, ensuring all files are removed first.",
+            "Understanding directory permissions: <br />Permissions dictate access levels. Use 'ls -l' to view permissions and 'chmod' to change them. For example, 'chmod 755 dir' grants full access to the owner and read/execute for others.",
+            "Using 'rm' to remove files and directories: <br />The 'rm' command deletes files. To remove directories and their contents, add the '-r' flag, e.g., 'rm -r dir'. Exercise caution to avoid accidental deletions."
+          ]
+        },
+        {
+          title: "5.3 Copying and Moving Files",
+          content: "Techniques for copying and moving files using 'cp' and 'mv', with tips for handling batch operations and preserving file attributes.",
+          bulletPoints: [
+            "Copying files with 'cp'",
+            "Moving and renaming files with 'mv'",
+            "Using wildcards for batch operations",
+            "Preserving file attributes during copy"
+          ],
+          extraContent: [
+            "Copying files with 'cp': <br />The 'cp' command copies files or directories. Use 'cp -r' for directories and 'cp -i' for confirmation prompts to avoid overwriting existing files.",
+            "Moving and renaming files with 'mv': <br />The 'mv' command moves files or renames them. For instance, 'mv file.txt /home/user/' moves the file, while 'mv file.txt newname.txt' renames it.",
+            "Using wildcards for batch operations: <br />Wildcards like '*' simplify actions. For example, 'cp *.txt backup/' copies all .txt files to the backup folder. Combine patterns for flexibility.",
+            "Preserving file attributes during copy: <br />To preserve attributes like timestamps, use 'cp -p'. This ensures copied files retain their original metadata for consistency."
+          ]
+        },
+        {
+          title: "5.4 Viewing and Editing Files",
+          content: "Commands for viewing and editing file content, including 'cat', 'less', 'nano', and 'grep' for searching within files.",
+          bulletPoints: [
+            "Displaying file contents with 'cat'",
+            "Using 'less' and 'more' for paginated viewing",
+            "Editing files with 'nano' text editor",
+            "Searching within files using 'grep'"
+          ],
+          extraContent: [
+            "Displaying file contents with 'cat': <br />'cat' outputs file content to the terminal. Combine it with '>' to save content, e.g., 'cat file.txt > newfile.txt' duplicates a file.",
+            "Using 'less' and 'more' for paginated viewing: <br />These tools display large files one screen at a time. 'less' allows backward navigation, making it more versatile than 'more'.",
+            "Editing files with 'nano' text editor: <br />'nano' is a simple text editor. Use 'nano file.txt' to edit files, with shortcuts like Ctrl+O to save and Ctrl+X to exit.",
+            "Searching within files using 'grep': <br />'grep' finds patterns within files. For example, 'grep \"error\" logfile.txt' lists lines containing 'error'. Add '-i' for case-insensitive searches."
+          ]
+        }
+      ]
+    },
+    {
+      title: "Chapter 6: A Bit of Plumbing",
+      summary: "This chapter explores advanced Linux command-line features such as redirection, pipes, file permissions, and combining commands for more efficient workflows.",
+      content: "Building on file management skills, this chapter introduces powerful features of the Linux command line to streamline operations and enhance productivity.",
+      image: "https://ubuntucommunity.s3.us-east-2.amazonaws.com/original/2X/6/60d1b71b8e3736d7f49b0550ad39c53253de7d17.png",
+      subsections: [
+        {
+          title: "6.1 Redirection and Pipes",
+          content: "Mastering input and output redirection along with piping commands for seamless data flow between processes.",
+          bulletPoints: [
+            "Redirecting output to files using '>'",
+            "Appending output to files with '>>'",
+            "Redirecting input from files using '<'",
+            "Connecting commands with pipes '|'"
+          ],
+          extraContent: [
+            "Redirecting output to files using '>': <br />The '>' operator saves command output to a file, e.g., 'ls > files.txt' stores directory contents in 'files.txt'. Existing files are overwritten unless appended.",
+            "Appending output to files with '>>': <br />Use '>>' to append output without overwriting. For example, 'echo \"new line\" >> file.txt' adds text to the end of 'file.txt'.",
+            "Redirecting input from files using '<': <br />The '<' operator feeds file content as input, e.g., 'sort < file.txt' sorts the file's lines. It simplifies processing stored data.",
+            "Connecting commands with pipes '|': <br />The '|' operator sends output from one command to another, e.g., 'ls | wc -l' counts directory items. Pipes enable powerful command chaining."
+          ]
+        },
+        {
+          title: "6.2 Combining Commands",
+          content: "Techniques for combining multiple commands with operators like ';', '&&', and '||', along with running commands in the background.",
+          bulletPoints: [
+            "Using ';' to run multiple commands sequentially",
+            "Conditional execution with '&&' and '||'",
+            "Grouping commands with parentheses '()'",
+            "Background execution using '&'"
+          ],
+          extraContent: [
+            "Using ';' to run multiple commands sequentially: <br />The ';' operator runs commands one after another, e.g., 'mkdir test; cd test'. All commands execute regardless of errors.",
+            "Conditional execution with '&&' and '||': <br />'cmd1 && cmd2' runs 'cmd2' only if 'cmd1' succeeds. Conversely, 'cmd1 || cmd2' executes 'cmd2' if 'cmd1' fails.",
+            "Grouping commands with parentheses '()': <br />Parentheses group commands, e.g., '(cd dir && ls)'. This treats grouped commands as a single unit for efficient execution.",
+            "Background execution using '&': <br />The '&' operator runs tasks in the background, allowing continued terminal use. For instance, 'sleep 10 &' executes a delay without blocking."
+          ]
+        },
+        {
+          title: "6.3 Using Wildcards and Globbing",
+          content: "Leveraging wildcards and globbing patterns to simplify file operations and match filenames efficiently.",
+          bulletPoints: [
+            "Matching filenames with '*' and '?'",
+            "Using character classes '[ ]' for patterns",
+            "Combining wildcards for complex matches",
+            "Escaping special characters"
+          ],
+          extraContent: [
+            "Matching filenames with '*' and '?': <br />The '*' wildcard matches any string, e.g., 'ls *.txt' lists all .txt files. '?' matches a single character, e.g., 'file?.txt'.",
+            "Using character classes '[ ]' for patterns: <br />Character classes match specific sets, e.g., 'ls [ab]*' lists files starting with 'a' or 'b'. Combine for flexibility.",
+            "Combining wildcards for complex matches: <br />Mix wildcards for tailored searches, e.g., 'ls [a-z]*?.txt'. This matches specific prefixes and suffix patterns.",
+            "Escaping special characters: <br />To use literal wildcards, escape them with '\\', e.g., 'ls \*.txt'. This treats '*' as a regular character."
+          ]
+        },
+        {
+          title: "6.4 Understanding File Permissions",
+          content: "Learning about file permissions, ownership, and special bits like setuid, setgid, and sticky bits to secure files and directories.",
+          bulletPoints: [
+            "Viewing permissions with 'ls -l'",
+            "Changing permissions with 'chmod'",
+            "Understanding ownership and 'chown'",
+            "Special permission bits: setuid, setgid, sticky"
+          ],
+          extraContent: [
+            "Viewing permissions with 'ls -l': <br />'ls -l' displays detailed file information, including permissions. For instance, '-rw-r--r--' shows owner read/write and group read permissions.",
+            "Changing permissions with 'chmod': <br />Modify permissions with 'chmod', e.g., 'chmod 644 file.txt' sets read/write for the owner and read-only for others.",
+            "Understanding ownership and 'chown': <br />The 'chown' command changes file ownership. For example, 'chown user:group file.txt' assigns a new owner and group.",
+            "Special permission bits: setuid, setgid, sticky: <br />Special bits enhance control. 'setuid' runs files with owner permissions. 'Sticky' prevents deletions by non-owners in shared directories."
+          ]
+        }
+      ]
+    },
+    {
+      title: "Chapter 7: The Command Line and the Superuser",
+      summary: "This chapter delves into administrative tasks, including managing users and groups, system monitoring, and working with the superuser privileges.",
+      content: "Linux provides powerful tools for system administration. In this chapter, readers will explore the superuser role, user management, and system maintenance commands.",
+      image: "https://ubuntucommunity.s3.us-east-2.amazonaws.com/original/2X/1/12687b59a76cd5746f1c7e7d534818d3d3a5f61f.png",
+      subsections: [
+        {
+          title: "7.1 Introduction to the Superuser",
+          content: "Understanding the root account, superuser privileges, and how to safely use 'sudo' and 'su' for administrative tasks.",
+          bulletPoints: [
+            "Understanding the root account",
+            "Risks associated with superuser privileges",
+            "Switching to the superuser with 'su'",
+            "Using 'sudo' for administrative tasks"
+          ],
+          extraContent: [
+            "Understanding the root account: <br />The root account is the ultimate authority, capable of modifying any file. Use it sparingly to minimize risks of accidental changes or security breaches.",
+            "Risks associated with superuser privileges: <br />Superuser privileges bypass safeguards. Mistakes or misuse can lead to system-wide issues, including deleted critical files or compromised security.",
+            "Switching to the superuser with 'su': <br />The 'su' command temporarily switches to the root account. Exit promptly after use with 'exit' or Ctrl+D to avoid prolonged risk.",
+            "Using 'sudo' for administrative tasks: <br />'sudo' executes individual commands with superuser privileges. For example, 'sudo apt update' updates package lists securely without full root access."
+          ]
+        },
+        {
+          title: "7.2 Managing Users and Groups",
+          content: "Commands for adding, modifying, and deleting users and groups, along with tips for managing group memberships.",
+          bulletPoints: [
+            "Adding new users with 'useradd'",
+            "Modifying users with 'usermod'",
+            "Deleting users with 'userdel'",
+            "Managing groups and group memberships"
+          ],
+          extraContent: [
+            "Adding new users with 'useradd': <br />'useradd' creates user accounts. Use options like '-m' to create a home directory and '-s' to specify the default shell.",
+            "Modifying users with 'usermod': <br />'usermod' updates user details. For example, 'usermod -aG sudo user' adds the user to the sudo group for administrative rights.",
+            "Deleting users with 'userdel': <br />'userdel' removes user accounts. Add '-r' to delete their home directory, ensuring all related files are removed.",
+            "Managing groups and group memberships: <br />'groupadd' creates groups, while 'gpasswd' assigns users to groups. Check memberships with 'cat /etc/group'."
+          ]
+        },
+        {
+          title: "7.3 Package Management",
+          content: "Using package managers like 'apt' to install, update, and remove software packages, and keeping the system up to date.",
+          bulletPoints: [
+            "Updating package lists with 'apt-get update'",
+            "Installing packages with 'apt-get install'",
+            "Removing packages with 'apt-get remove'",
+            "Upgrading the system with 'apt-get upgrade'"
+          ],
+          extraContent: [
+            "Updating package lists with 'apt-get update': <br />Run 'sudo apt-get update' to refresh repository data. This ensures you access the latest software versions available.",
+            "Installing packages with 'apt-get install': <br />Install software with 'sudo apt-get install package-name'. Use '-y' to skip confirmation prompts during installation.",
+            "Removing packages with 'apt-get remove': <br />Remove unwanted software using 'sudo apt-get remove package-name'. Add '--purge' to clear associated configuration files.",
+            "Upgrading the system with 'apt-get upgrade': <br />'sudo apt-get upgrade' installs available updates for all packages, keeping the system secure and up to date."
+          ]
+        },
+        {
+          title: "7.4 System Monitoring and Maintenance",
+          content: "Monitoring system performance and logs using 'ps', 'top', 'df', and 'cron' for scheduling tasks.",
+          bulletPoints: [
+            "Viewing running processes with 'ps' and 'top'",
+            "Checking disk usage with 'df' and 'du'",
+            "Monitoring system logs in '/var/log'",
+            "Scheduling tasks with 'cron'"
+          ],
+          extraContent: [
+            "Viewing running processes with 'ps' and 'top': <br />'ps' shows current processes, while 'top' provides a real-time view of resource usage. Use 'htop' for an interactive experience.",
+            "Checking disk usage with 'df' and 'du': <br />'df -h' summarizes disk usage, and 'du -sh directory/' calculates specific directory sizes for cleanup planning.",
+            "Monitoring system logs in '/var/log': <br />Logs like '/var/log/syslog' provide system event details. Use 'tail -f /var/log/syslog' for real-time monitoring.",
+            "Scheduling tasks with 'cron': <br />'crontab -e' schedules recurring tasks. For instance, '0 2 * * * backup.sh' runs a backup script daily at 2 AM."
+          ]
+        }
+      ]
     }
-  ],
+  ]
 };
 
 export default textbookData;

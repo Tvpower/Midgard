@@ -1,4 +1,3 @@
-// PhishingSimulationPage.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles.css';
@@ -9,6 +8,7 @@ const PasswordStrengthTester = () => {
     const [attempts, setAttempts] = useState(0);
     const [bestScore, setBestScore] = useState(0);
     const [isCompleted, setIsCompleted] = useState(false);
+    const [currentStrength, setCurrentStrength] = useState(0);
 
     const evaluateStrength = (pwd) => {
         let strength = 0;
@@ -32,42 +32,62 @@ const PasswordStrengthTester = () => {
             setBestScore(strength);
         }
 
-        // Set feedback message
+        setCurrentStrength(strength);
         setStrengthMessage(messages[strength] || "Very Weak");
 
         // Track attempt
-        setAttempts(attempts + 1);
-
-        // Consider activity completed after 3 attempts or reaching max strength
-        if (attempts >= 2 || strength === 4) {
-            submitProgress(strength);
-            setIsCompleted(true);
+        if (!isCompleted) {
+            setAttempts(prev => prev + 1);
         }
     };
 
-    const submitProgress = async (strengthScore) => {
+    const submitProgress = async () => {
         try {
-            const userId = localStorage.getItem('userId'); // Get userId from your auth system
-            const response = await axios.post('/api/users/progress', {
-                userId,
+            const token = localStorage.getItem('token');
+            console.log('Starting submitProgress with score:', bestScore);
+
+            if (!token) {
+                console.error('No token found in localStorage');
+                return;
+            }
+
+            const payload = {
                 activityType: 'passwordTester',
-                score: Math.round((strengthScore / 4) * 100)
-            });
+                score: Math.round((bestScore / 4) * 100)
+            };
+            console.log('Sending payload:', payload);
+
+            const response = await axios.post(
+                'http://localhost:3001/user/progress',
+                payload,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            console.log('Response from server:', response.data);
 
             if (response.data.success) {
-                console.log('Progress updated successfully');
+                alert(`Progress saved! Score: ${payload.score}%`);
+                setIsCompleted(true);
+            } else {
+                console.error('Progress update failed:', response.data);
+                alert('Failed to save progress. Please try again.');
             }
         } catch (error) {
-            console.error('Error updating progress:', error);
+            console.error('Error in submitProgress:', error.response || error);
+            console.log('Full error object:', error);
+            alert('Error saving progress. Check console for details.');
         }
     };
 
     const handlePasswordChange = (e) => {
         const pwd = e.target.value;
         setPassword(pwd);
-        if (!isCompleted) {
-            evaluateStrength(pwd);
-        }
+        evaluateStrength(pwd);
     };
 
     return (
@@ -80,10 +100,30 @@ const PasswordStrengthTester = () => {
                 onChange={handlePasswordChange}
             />
             <p>Password Strength: <strong>{strengthMessage}</strong></p>
+            <p>Current Score: {currentStrength}/4</p>
+
+            {!isCompleted && (
+                <button
+                    onClick={submitProgress}
+                    className="submit-button"
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        marginTop: '10px'
+                    }}
+                >
+                    Submit Score
+                </button>
+            )}
+
             {isCompleted && (
                 <p>Activity completed! Best strength achieved: {bestScore}/4</p>
             )}
-            <p>Attempts: {attempts}/3</p>
+            <p>Attempts: {attempts}</p>
         </div>
     );
 };

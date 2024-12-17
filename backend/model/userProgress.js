@@ -1,4 +1,3 @@
-// model/userProgress.js
 import mongoose from "mongoose";
 
 const userProgressSchema = new mongoose.Schema({
@@ -11,14 +10,19 @@ const userProgressSchema = new mongoose.Schema({
         chapterIndex: Number,
         subsectionIndex: Number,
         completed: Boolean,
-        score: Number,
         completedAt: Date
     }],
     activities: [{
         type: {
             type: String,
-            enum: ['phishingSimulation', 'passwordTester', 'quiz'],
+            enum: ['phishingSimulation', 'passwordTester', 'quiz', 'chapterProgress'],
             required: true
+        },
+        chapterData: {
+            chapterIndex: Number,
+            subsectionIndex: Number,
+            completed: Boolean,
+            completedAt: Date
         },
         score: Number,
         completed: Boolean,
@@ -32,23 +36,25 @@ const userProgressSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Add the method to the schema before creating the model
 userProgressSchema.methods.calculateProgress = function() {
     // Initialize arrays if they don't exist
     this.chaptersProgress = this.chaptersProgress || [];
     this.activities = this.activities || [];
 
-    const totalChapters = 4; // Total number of chapters
+    const totalChapters = 7; // Total number of chapters in textbook
     const totalActivities = 2; // Total number of activities
 
-    // Count completed items
-    const completedChapters = Array.isArray(this.chaptersProgress)
-        ? this.chaptersProgress.filter(cp => cp && cp.completed).length
-        : 0;
+    // Count completed chapters (including subsections)
+    const completedChapters = new Set(
+        this.activities
+            .filter(a => a.type === 'chapterProgress' && a.chapterData?.completed)
+            .map(a => a.chapterData.chapterIndex)
+    ).size;
 
-    const completedActivities = Array.isArray(this.activities)
-        ? this.activities.filter(a => a && a.completed).length
-        : 0;
+    // Count completed activities
+    const completedActivities = this.activities.filter(
+        a => a.type !== 'chapterProgress' && a.completed
+    ).length;
 
     const totalItems = totalChapters + totalActivities;
     const completedItems = completedChapters + completedActivities;
@@ -57,6 +63,5 @@ userProgressSchema.methods.calculateProgress = function() {
     return this.overallProgress;
 };
 
-// Create and export the model
 const UserProgress = mongoose.model('UserProgress', userProgressSchema);
 export default UserProgress;

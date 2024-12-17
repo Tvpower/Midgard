@@ -8,6 +8,8 @@ import axios from 'axios';
 import './styles.css';
 import QuizPage from './QuizPage.js'; // Adjust path to wherever you placed QuizPage.js
 import PracticalExercisePage from './PracticalExercisePage.js'; // Adjust path
+import TerminalComponent from '../../components/Terminal/Terminal.js';
+import 'xterm/css/xterm.css';
 
 const Sidebar = ({ chapters, onSelectChapter, selectedChapter, selectedSubsection, onSelectSubsection, progress }) => {
     const [expandedChapters, setExpandedChapters] = useState([]);
@@ -78,7 +80,7 @@ const ContentPage = () => {
     const [selectedChapter, setSelectedChapter] = useState(0);
     const [selectedSubsection, setSelectedSubsection] = useState(null);
     const [progress, setProgress] = useState(0);
-    const [userId, setUserId] = useState(localStorage.getItem('userId')); 
+    const [userProgressDoc, setUserProgressDoc] = useState(null);    const [userId, setUserId] = useState(localStorage.getItem('userId'));
     const [chatInput, setChatInput] = useState('');
     const [chatMessages, setChatMessages] = useState([{ text: 'Hi, any questions for me?', isBot: true }]);
     const [loading, setLoading] = useState(false);
@@ -99,48 +101,70 @@ const ContentPage = () => {
         ? currentChapter.subsections[selectedSubsection].extraContent
         : null;
 
-    useEffect(() => {
-        const fetchProgress = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.log('No token found');
-                    return;
-                }
-                console.log('Attempting to fetch progress with token:', token);
+    const updateChapterProgress = async (chapterIndex, subsectionIndex = null) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('No token found');
+                return;
+            }
 
-                const response = await axios.get('http://localhost:3001/progress/user-progress', {
+            const payload = {
+                activityType: 'chapterProgress',
+                chapterData: {
+                    chapterIndex: chapterIndex,
+                    subsectionIndex: subsectionIndex,
+                    completed: true,
+                    completedAt: new Date()
+                }
+            };
+
+            const response = await axios.post(
+                'http://localhost:3001/user/progress',
+                payload,
+                {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
-                });
-
-                console.log('Full progress response:', response);
-
-                if (response.data) {
-                    console.log('Progress data received:', response.data);
-                    setProgress(response.data.progress || 0);
-                } else {
-                    console.error('No data in response');
                 }
-            } catch (error) {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error('Error response:', error.response.data);
-                    console.error('Error status:', error.response.status);
-                    console.error('Error headers:', error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error('No response received:', error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error('Error setting up request:', error.message);
-                }
+            );
+            console.log("hisss:", response)
+
+            if (response.data.success) {
+                // Update local progress state
+                setProgress(response.data.progress);
+                fetchProgress(); // Refresh progress data
             }
-        };
+        } catch (error) {
+            console.error('Error updating chapter progress:', error);
+        }
+    };
 
+    const fetchProgress = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('No token found');
+                return;
+            }
+
+            const response = await axios.get('http://localhost:3001/progress/user-progress', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.data) {
+                setProgress(response.data.progress || 0);
+                setUserProgressDoc(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching progress:', error);
+        }
+    };
+    useEffect(() => {
         fetchProgress();
     }, []);
 
@@ -170,35 +194,42 @@ const ContentPage = () => {
         }
     };
 
-    const goToNextPage = () => {
+    const goToNextPage = async () => {
         const chapterCount = textbookData.chapters.length;
         const currentChapter = textbookData.chapters[selectedChapter];
         const currentSubsections = currentChapter.subsections || [];
         const subsectionCount = currentSubsections.length;
 
+        // Update progress before changing page
+        await updateChapterProgress(
+            selectedChapter,
+            selectedSubsection !== null ? selectedSubsection : null
+        );
+
+        // State updates
         if (selectedSubsection === null) {
             if (subsectionCount > 0) {
                 setSelectedSubsection(0);
-            } else {
-                if (selectedChapter < chapterCount - 1) {
-                    setSelectedChapter(selectedChapter + 1);
-                    setSelectedSubsection(null);
-                } else {
-                    // End of all chapters scenario
-                }
+            } else if (selectedChapter < chapterCount - 1) {
+                setSelectedChapter(selectedChapter + 1);
+                setSelectedSubsection(null);
             }
         } else {
             if (selectedSubsection < subsectionCount - 1) {
                 setSelectedSubsection(selectedSubsection + 1);
-            } else {
-                if (selectedChapter < chapterCount - 1) {
-                    setSelectedChapter(selectedChapter + 1);
-                    setSelectedSubsection(null);
-                } else {
-                    // End of all chapters scenario
-                }
+            } else if (selectedChapter < chapterCount - 1) {
+                setSelectedChapter(selectedChapter + 1);
+                setSelectedSubsection(null);
             }
         }
+
+        // Use setTimeout to ensure scroll happens after state update
+        setTimeout(() => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }, 100);
     };
 
     const goToFurtherReading = () => {
@@ -206,10 +237,29 @@ const ContentPage = () => {
         const furtherReadingsArr = ["https://www.cisco.com/site/us/en/learn/topics/security/what-is-cybersecurity.html",
             "https://www.stickmancyber.com/cybersecurity-blog/is-your-business-vulnerable-start-identifying-cybersecurity-risks",
             "https://www.fcc.gov/communications-business-opportunities/cybersecurity-small-businesses",
-            "https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online"]
+            "https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online",
+            "https://linuxcommand.org/lc3_lts0050.php",
+            "https://ss64.com",
+            "https://linuxize.com/post/how-to-create-groups-in-linux/"]
 
         window.open(furtherReadingsArr[currentChapter.title[8] - 1]); 
     }
+
+    const showTerminal = () => {
+        const chapterNum = currentChapter.title.match(/Chapter (\d+)/);
+        if (!chapterNum) return false;
+        const num = parseInt(chapterNum[1]);
+        return num >= 5 && num <= 7 && selectedSubsection !== null;
+    };
+
+    // Add useEffect to handle scrolling
+    useEffect(() => {
+        // Find the main content element and scroll it to top
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.scrollTop = 0;
+        }
+    }, [selectedChapter, selectedSubsection]); // Trigger when chapter or subsection changes
 
     // If showQuiz or showExercise is true, we hide the main content and show the respective component
     if (showQuiz) {
@@ -248,6 +298,7 @@ const ContentPage = () => {
                     selectedChapter={selectedChapter}
                     selectedSubsection={selectedSubsection}
                     progress={progress}
+                    userProgressDoc={userProgressDoc}
                 />
                 <main className="main-content">
                     <h2>{textbookData.title}</h2>
@@ -266,7 +317,19 @@ const ContentPage = () => {
                                     </ul>
                                 )}
                                 {currentExtraContent && currentExtraContent.map((paragraph, index) => (
-                                    <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+                                    <React.Fragment key={index}>
+                                        <p dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+                                        {showTerminal() && (
+                                            <div className="terminal-container">
+                                                <h3>Practice Terminal {index + 1}</h3>
+                                                <TerminalComponent 
+                                                    terminalId={`${selectedChapter}-${selectedSubsection}-${index}`} 
+                                                    chapterNum={parseInt(selectedChapter) + 1} 
+                                                    subsectionNum={parseInt(selectedSubsection) + 1} 
+                                                />
+                                            </div>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                                 {selectedChapter === 1 && selectedSubsection === 0 && (
                                   <PhishingSimulationPage />
@@ -284,7 +347,6 @@ const ContentPage = () => {
                                         src={currentChapter.image}
                                         alt={`Image for ${currentChapter.title}`}
                                     />
-                                    <p>Computer Security!</p>
                                 </div>
                             </>
                         )}

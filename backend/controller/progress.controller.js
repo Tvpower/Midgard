@@ -1,28 +1,26 @@
 import UserProgress from "../model/userProgress.js";
 import jwt from 'jsonwebtoken';
 
-
 export const updateProgress = async (req, res) => {
     try {
         // Get the authorization header
         const authHeader = req.headers.authorization;
-        console.log('Received auth header:', authHeader); // Debug log
+        console.log('Received auth header:', authHeader);
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            console.log('Missing or invalid auth header'); // Debug log
+            console.log('Missing or invalid auth header');
             return res.status(401).json({
                 message: 'Authorization header missing or invalid'
             });
         }
 
         const token = authHeader.split(' ')[1];
-        console.log('Extracted token:', token); // Debug log
+        console.log('Extracted token:', token);
 
         let decoded;
         try {
-            // Make sure to use the same secret key as in login
             decoded = jwt.verify(token, process.env.SECRET_KEY);
-            console.log('Decoded token:', decoded); // Debug log
+            console.log('Decoded token:', decoded);
         } catch (jwtError) {
             console.error('Token verification failed:', jwtError);
             return res.status(401).json({
@@ -32,17 +30,50 @@ export const updateProgress = async (req, res) => {
         }
 
         const userId = decoded.userId;
-        console.log('User ID from token:', userId); // Debug log
+        console.log('User ID from token:', userId);
 
         let userProgressDoc = await UserProgress.findOne({ userId });
         if (!userProgressDoc) {
             userProgressDoc = new UserProgress({ userId });
         }
 
-        const { activityType, score } = req.body;
-        console.log('Received activity data:', { activityType, score }); // Debug log
+        const { activityType, score, chapterData } = req.body;
+        console.log('Received activity data:', { activityType, score, chapterData });
 
-        if (activityType) {
+        if (activityType === 'chapterProgress' && chapterData) {
+            // Handle chapter progress
+            const chapterIndex = userProgressDoc.chaptersProgress.findIndex(
+                cp => cp.chapterIndex === chapterData.chapterIndex &&
+                    cp.subsectionIndex === chapterData.subsectionIndex
+            );
+
+            if (chapterIndex >= 0) {
+                userProgressDoc.chaptersProgress[chapterIndex] = {
+                    ...chapterData,
+                    completed: true,
+                    completedAt: new Date()
+                };
+            } else {
+                userProgressDoc.chaptersProgress.push({
+                    ...chapterData,
+                    completed: true,
+                    completedAt: new Date()
+                });
+            }
+
+            // Also add to activities for overall progress calculation
+            userProgressDoc.activities.push({
+                type: activityType,
+                chapterData: {
+                    ...chapterData,
+                    completed: true,
+                    completedAt: new Date()
+                },
+                completed: true,
+                completedAt: new Date()
+            });
+        } else if (activityType) {
+            // Handle other activity types (phishing, password tester, etc.)
             const activityIndex = userProgressDoc.activities.findIndex(a => a.type === activityType);
             if (activityIndex >= 0) {
                 userProgressDoc.activities[activityIndex] = {
@@ -64,11 +95,13 @@ export const updateProgress = async (req, res) => {
         const newProgress = userProgressDoc.calculateProgress();
         await userProgressDoc.save();
 
-        console.log('Saved progress document:', userProgressDoc); // Debug log
+        console.log('Saved progress document:', userProgressDoc);
 
         res.json({
             success: true,
             progress: newProgress,
+            chaptersProgress: userProgressDoc.chaptersProgress,
+            activities: userProgressDoc.activities,
             message: 'Progress updated successfully'
         });
     } catch (error) {
@@ -83,7 +116,7 @@ export const updateProgress = async (req, res) => {
 
 export const getProgress = async (req, res) => {
     try {
-        const userId = req.userId; // Get userId from request
+        const userId = req.userId;
         console.log('Getting progress for userId:', userId);
 
         const userProgressDoc = await UserProgress.findOne({ userId });
@@ -93,7 +126,7 @@ export const getProgress = async (req, res) => {
             return res.json({
                 success: true,
                 progress: 0,
-                chapters: [],
+                chaptersProgress: [],
                 activities: []
             });
         }
@@ -104,7 +137,7 @@ export const getProgress = async (req, res) => {
         res.json({
             success: true,
             progress: currentProgress,
-            chapters: userProgressDoc.chaptersProgress,
+            chaptersProgress: userProgressDoc.chaptersProgress,
             activities: userProgressDoc.activities
         });
     } catch (error) {

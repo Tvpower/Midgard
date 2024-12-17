@@ -77,8 +77,10 @@ const PracticalExercisePage = ({ onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [feedback, setFeedback] = useState(null);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [showingAnswer, setShowingAnswer] = useState(false);
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = !feedback ? questions[currentQuestionIndex] : feedback[currentQuestionIndex];
 
   const handleOptionSelect = (option) => {
     setSelectedAnswers((prevAnswers) => ({
@@ -88,87 +90,138 @@ const PracticalExercisePage = ({ onBack }) => {
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (feedback) {
+      if (currentQuestionIndex < feedback.length - 1) {
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentQuestionIndex(prev => prev + 1);
+          setShowingAnswer(false);
+        }, 400);
+        setTimeout(() => {
+          setIsFlipping(false);
+        }, 800);
+      }
+    } else {
+      if (currentQuestionIndex < questions.length - 1) {
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentQuestionIndex(prev => prev + 1);
+        }, 400);
+        setTimeout(() => {
+          setIsFlipping(false);
+        }, 800);
+      }
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setIsFlipping(true);
+      setTimeout(() => {
+        setCurrentQuestionIndex(prev => prev - 1);
+        setShowingAnswer(false);
+      }, 400);
+      setTimeout(() => {
+        setIsFlipping(false);
+      }, 800);
     }
   };
 
   const handleSubmit = () => {
-    const results = questions.map((question, index) => {
-      const isCorrect = selectedAnswers[index] === question.correctAnswer;
-      return {
-        question: question.question,
-        selectedAnswer: selectedAnswers[index] || 'No answer',
-        correctAnswer: question.correctAnswer,
-        isCorrect,
-      };
-    });
+    const results = questions.map((question, index) => ({
+      question: question.question,
+      selectedAnswer: selectedAnswers[index] || 'No answer',
+      correctAnswer: question.correctAnswer,
+      isCorrect: selectedAnswers[index] === question.correctAnswer,
+    }));
     setFeedback(results);
+    setCurrentQuestionIndex(0);
+    setShowingAnswer(false);
+  };
+
+  const handleFlipCard = () => {
+    if (feedback) {
+      setIsFlipping(true);
+      setTimeout(() => {
+        setShowingAnswer(!showingAnswer);
+      }, 400);
+      setTimeout(() => {
+        setIsFlipping(false);
+      }, 800);
+    }
   };
 
   return (
     <div className="exercise-page">
-      {!feedback ? (
-        <div className="exercise-container">
-          <h2>Practical Exercise: Multiple Choice</h2>
-          <p>
-            <strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}
-          </p>
-          {currentQuestion.options.map((option, index) => (
-            <div key={index} style={{ marginBottom: '8px' }}>
-              <label>
-                <input
-                  type="radio"
-                  name={`question-${currentQuestionIndex}`}
-                  value={option}
-                  onChange={() => handleOptionSelect(option)}
-                  checked={selectedAnswers[currentQuestionIndex] === option}
-                />
-                {' '}{option}
-              </label>
+      <div className="exercise-container">
+        <h2>Practical Exercise: Multiple Choice</h2>
+        <div className="card-container">
+          <div className={`flashcard ${isFlipping ? 'flipping' : ''}`} onClick={handleFlipCard}>
+            <div className="card-content">
+              {!feedback ? (
+                <>
+                  <p>
+                    <strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}
+                  </p>
+                  {currentQuestion.options.map((option, index) => (
+                    <div key={index} style={{ marginBottom: '8px' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`question-${currentQuestionIndex}`}
+                          value={option}
+                          onChange={() => handleOptionSelect(option)}
+                          checked={selectedAnswers[currentQuestionIndex] === option}
+                        />
+                        {' '}{option}
+                      </label>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {!showingAnswer ? (
+                    <div className="question-side">
+                      <p><strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}</p>
+                      <p>Your Answer: {currentQuestion.selectedAnswer}</p>
+                      <p>(Click to see correct answer)</p>
+                    </div>
+                  ) : (
+                    <div className="answer-side">
+                      <p>Correct Answer: {currentQuestion.correctAnswer}</p>
+                      <p className={currentQuestion.isCorrect ? 'correct' : 'incorrect'}>
+                        {currentQuestion.isCorrect ? 'Correct!' : 'Incorrect'}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-          ))}
-          <div style={{ marginTop: '20px' }}>
-            {currentQuestionIndex > 0 && (
-              <button onClick={handlePrevious} style={{ marginRight: '10px' }}>Previous</button>
-            )}
-            {currentQuestionIndex < questions.length - 1 ? (
+          </div>
+        </div>
+        <div style={{ marginTop: '20px' }}>
+          {currentQuestionIndex > 0 && (
+            <button onClick={handlePrevious} style={{ marginRight: '10px' }}>Previous</button>
+          )}
+          {!feedback ? (
+            currentQuestionIndex < questions.length - 1 ? (
               <button onClick={handleNext}>Next</button>
             ) : (
               <button onClick={handleSubmit}>Submit</button>
-            )}
-          </div>
+            )
+          ) : (
+            <>
+              {currentQuestionIndex < feedback.length - 1 ? (
+                <button onClick={handleNext}>Next Result</button>
+              ) : (
+                <button onClick={onBack}>Back to Main Menu</button>
+              )}
+            </>
+          )}
         </div>
-      ) : (
-        <div className="results-container">
-          <h3>Results</h3>
-          <div className="results-grid">
-            {feedback.map((result, index) => (
-              <div key={index} className="result-item">
-                <p><strong>{index + 1}.</strong> {result.question}</p>
-                <p>Your Answer: <span>{result.selectedAnswer}</span></p>
-                <p>Correct Answer: <span>{result.correctAnswer}</span></p>
-                <p>
-                  {result.isCorrect ? (
-                    <span style={{ color: 'green' }}>Correct</span>
-                  ) : (
-                    <span style={{ color: 'red' }}>Incorrect</span>
-                  )}
-                </p>
-              </div>
-            ))}
-          </div>
-          <button onClick={onBack}>Back to Main Menu</button>
-        </div>
-      )}
+      </div>
     </div>
-  );  
+  );
 };
 
 export default PracticalExercisePage;

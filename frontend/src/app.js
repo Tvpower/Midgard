@@ -69,15 +69,15 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <LoginPage />} />
-                    <Route path="/content" element={isAuthenticated ? <ContentPage /> : <Navigate to="/login" />}/>
+                    <Route path="/content" element={isAuthenticated ? <ContentPage /> : <Navigate to="/content" />}/>
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/home" element={isAuthenticated ? <HomePage /> : <Navigate to="/login" />}/>
                     <Route path="/settings" element={isAuthenticated ? <SettingsPage /> : <Navigate to="/login" />} />
                     {/* Default route that redirects to Dashboard or Login based on authentication */}
                     <Route path="/" element={isAuthenticated ? <Navigate to="/content" /> : <Navigate to="/login" />} />
                     <Route path="/tools" element={isAuthenticated ? <ToolsPage /> : <Navigate to="/login" />} />
-                    <Route path="/tools/url-scanner" element={isAuthenticated ? <URLScannerPage /> : <Navigate to="/login" />} />
-                    <Route path="/tools/password-generator" element={isAuthenticated ? <PasswordGeneratorPage /> : <Navigate to="/login" />} />
+                    <Route path="/tools/url-scanner" element={isAuthenticated ? <URLScannerPage /> : <Navigate to="/tools" />} />
+                    <Route path="/tools/password-generator" element={isAuthenticated ? <PasswordGeneratorPage /> : <Navigate to="/tools" />} />
                 </Routes>
             </Router>
         </>

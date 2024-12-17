@@ -67,8 +67,10 @@ const QuizPage = ({ onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [feedback, setFeedback] = useState(null);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [showingAnswer, setShowingAnswer] = useState(false);
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = !feedback ? questions[currentQuestionIndex] : feedback[currentQuestionIndex];
 
   const handleAnswerChange = (e) => {
     const { value } = e.target;
@@ -79,79 +81,127 @@ const QuizPage = ({ onBack }) => {
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (feedback) {
+      if (currentQuestionIndex < feedback.length - 1) {
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentQuestionIndex(prev => prev + 1);
+          setShowingAnswer(false);
+        }, 400);
+        setTimeout(() => {
+          setIsFlipping(false);
+        }, 800);
+      }
+    } else {
+      if (currentQuestionIndex < questions.length - 1) {
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentQuestionIndex(prev => prev + 1);
+        }, 400);
+        setTimeout(() => {
+          setIsFlipping(false);
+        }, 800);
+      }
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setIsFlipping(true);
+      setTimeout(() => {
+        setCurrentQuestionIndex(prev => prev - 1);
+        setShowingAnswer(false);
+      }, 400);
+      setTimeout(() => {
+        setIsFlipping(false);
+      }, 800);
     }
   };
 
   const handleSubmit = () => {
-    const results = questions.map((question, index) => {
-      const userAnswer = (userAnswers[index] || '').trim();
-      const isCorrect = userAnswer.toLowerCase() === question.correctAnswer.toLowerCase();
-      return {
-        question: question.question,
-        userAnswer: userAnswer || 'No answer',
-        correctAnswer: question.correctAnswer,
-        isCorrect,
-      };
-    });
+    const results = questions.map((question, index) => ({
+      question: question.question,
+      userAnswer: userAnswers[index] || 'No answer',
+      correctAnswer: question.correctAnswer,
+      isCorrect: (userAnswers[index] || '').toLowerCase() === question.correctAnswer.toLowerCase(),
+    }));
     setFeedback(results);
+    setCurrentQuestionIndex(0);
+    setShowingAnswer(false);
+  };
+
+  const handleFlipCard = () => {
+    if (feedback) {
+      setIsFlipping(true);
+      setTimeout(() => {
+        setShowingAnswer(!showingAnswer);
+      }, 400);
+      setTimeout(() => {
+        setIsFlipping(false);
+      }, 800);
+    }
   };
 
   return (
     <div className="exercise-page">
-      {!feedback ? (
-        <div className="exercise-container">
-          <h2>Quiz: Text Input Questions</h2>
-          <p>
-            <strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}
-          </p>
-          <input
-            type="text"
-            placeholder="Type your answer here"
-            value={userAnswers[currentQuestionIndex] || ''}
-            onChange={handleAnswerChange}
-            style={{ marginBottom: '10px', display: 'block', width: '100%', padding: '10px', borderRadius: '5px' }}
-          />
-          <div style={{ marginTop: '20px' }}>
-            {currentQuestionIndex > 0 && (
-              <button onClick={handlePrevious} style={{ marginRight: '10px' }}>Previous</button>
-            )}
-            {currentQuestionIndex < questions.length - 1 ? (
+      <div className="exercise-container">
+        <h2>Quiz: Text Input Questions</h2>
+        <div className="card-container">
+          <div className={`flashcard ${isFlipping ? 'flipping' : ''}`} onClick={handleFlipCard}>
+            <div className="card-content">
+              {!feedback ? (
+                <>
+                  <p><strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}</p>
+                  <input
+                    type="text"
+                    placeholder="Type your answer here"
+                    value={userAnswers[currentQuestionIndex] || ''}
+                    onChange={handleAnswerChange}
+                    style={{ marginBottom: '10px', display: 'block', width: '100%', padding: '10px', borderRadius: '5px' }}
+                  />
+                </>
+              ) : (
+                <>
+                  {!showingAnswer ? (
+                    <div className="question-side">
+                      <p><strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}</p>
+                      <p>Your Answer: {currentQuestion.userAnswer}</p>
+                      <p>(Click to see correct answer)</p>
+                    </div>
+                  ) : (
+                    <div className="answer-side">
+                      <p>Correct Answer: {currentQuestion.correctAnswer}</p>
+                      <p className={currentQuestion.isCorrect ? 'correct' : 'incorrect'}>
+                        {currentQuestion.isCorrect ? 'Correct!' : 'Incorrect'}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: '20px' }}>
+          {currentQuestionIndex > 0 && (
+            <button onClick={handlePrevious} style={{ marginRight: '10px' }}>Previous</button>
+          )}
+          {!feedback ? (
+            currentQuestionIndex < questions.length - 1 ? (
               <button onClick={handleNext}>Next</button>
             ) : (
               <button onClick={handleSubmit}>Submit</button>
-            )}
-          </div>
+            )
+          ) : (
+            <>
+              {currentQuestionIndex < feedback.length - 1 ? (
+                <button onClick={handleNext}>Next Result</button>
+              ) : (
+                <button onClick={onBack}>Back to Main Menu</button>
+              )}
+            </>
+          )}
         </div>
-      ) : (
-        <div className="results-container">
-          <h3>Quiz Results</h3>
-          <div className="results-grid">
-            {feedback.map((result, index) => (
-              <div key={index} className="result-item">
-                <p><strong>{index + 1}.</strong> {result.question}</p>
-                <p>Your Answer: <span>{result.userAnswer}</span></p>
-                <p>Correct Answer: <span>{result.correctAnswer}</span></p>
-                <p>
-                  {result.isCorrect ? (
-                    <span style={{ color: 'green' }}>Correct</span>
-                  ) : (
-                    <span style={{ color: 'red' }}>Incorrect</span>
-                  )}
-                </p>
-              </div>
-            ))}
-          </div>
-          <button onClick={onBack} style={{ marginTop: '20px' }}>Back to Main Menu</button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
